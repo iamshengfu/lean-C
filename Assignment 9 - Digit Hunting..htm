@@ -1,0 +1,606 @@
+<!DOCTYPE html>
+<!-- saved from url=(0078)http://www.comp.nus.edu.sg/~gem1501/year1314sem2/assignments/assignment09.html -->
+<html><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    <meta charset="UTF-8">
+    <title>Assignment 9 - Digit Hunting.</title>
+    <link rel="stylesheet" type="text/css" href="./Assignment 9 - Digit Hunting._files/assign.css">
+    <link rel="stylesheet" type="text/css" href="./Assignment 9 - Digit Hunting._files/highlight_js.css">
+</head>
+<body>
+
+<h1>Assignment 9 - Digit Hunting</h1>
+
+<ol class="longlist">
+<li>
+    <div>Getting started</div>
+    <p>
+    Please refer to this
+    <a href="http://www.comp.nus.edu.sg/~gem1501/year1314sem2/assignments/getting_started.html">page</a>
+    for information on how to work on your assignment.
+    </p>
+</li>
+<li>
+    <div>Task of this exercise</div>
+    <p>
+    The task of this homework is to get familiar with the usage of functions
+    written by others, which occurs when working in teams of programmers in
+    companies. Furthermore, this homework should give an idea how digit hunting
+    — that is computing large quantities of digits of famous numbers — is
+    performed in practice. 
+    </p>
+</li>
+<li>
+    <div>General Outline</div>
+    <p>
+    Implemented is some fixed point arithmetic on arrays. These arrays have
+    length 305 which represent 100 digits on base 100000 before and 205 digits
+    on base 100000 behind the dot. This corresponds to 500 digits before and
+    1025 digits after the dot in the decimal system. The last 25 digits are not
+    displayed but just an attempt to minimize the effect of rounding errors.
+    These long numbers can be added, negated, substracted and printed.
+    Furthermore, one can multiply and divide by relatively small integers.
+    </p>
+</li>
+<li>
+    <div>Creating a new variable</div>
+    <p>
+    Technically, variables are arrays of the length 305 which is hold in the
+    variable longlength. So you can create a new variable with the command:
+    </p>
+<div class="highlight"><pre><span class="nx">x</span> <span class="o">=</span> <span class="k">new</span> <span class="nb">Array</span><span class="p">(</span><span class="nx">longlength</span><span class="p">);</span>
+</pre></div>
+    <p>
+    Writing the variable name is better style than writing 305 since you can
+    later change the value assigned to this variable without having to change
+    other parts the program.
+    </p>
+</li>
+<li>
+    <div>Printing a value of a variable</div>
+    <p>
+    You can print the content of a variable <code>x</code> with the command:
+    </p>
+<div class="highlight"><pre><span class="nx">longprint</span><span class="p">(</span><span class="nx">x</span><span class="p">);</span> 
+</pre></div>
+    <p>
+    Leading and trailing lines full of zeroes are not printed. The decimal dot
+    appears at the end of the corresponding line.
+    </p>
+</li>
+<li>
+    <div>Arithmetic Operations with variables</div>
+    <p>
+    If <code>x</code> and <code>y</code> are arrays of length 305 and
+    <code>i</code>, <code>j</code> normal integer variables or integer-valued
+    expressions then the following operations can be performed. As an
+    explanation you see the normal commands performed if <code>x</code> and
+    <code>y</code> would be normal numerical variables:
+    </p>
+<div class="highlight"><pre><span class="nx">longadd</span><span class="p">(</span><span class="nx">x</span><span class="p">,</span> <span class="nx">y</span><span class="p">);</span>      <span class="c1">// Adding y to x             x = x + y;</span>
+<span class="nx">longsub</span><span class="p">(</span><span class="nx">x</span><span class="p">,</span> <span class="nx">y</span><span class="p">);</span>      <span class="c1">// Substracting y from x     x = x - y;</span>
+<span class="nx">longnegate</span><span class="p">(</span><span class="nx">x</span><span class="p">);</span>      <span class="c1">// Negating x                x = -x;</span>
+<span class="nx">longinit</span><span class="p">(</span><span class="nx">x</span><span class="p">,</span> <span class="nx">i</span><span class="p">,</span> <span class="nx">j</span><span class="p">);</span>  <span class="c1">// Initiallize x as i / j    x = i / j;</span>
+                    <span class="c1">// If j &lt; 1, this operation does just x = i;</span>
+<span class="nx">longmult</span><span class="p">(</span><span class="nx">x</span><span class="p">,</span> <span class="nx">i</span><span class="p">,</span> <span class="nx">j</span><span class="p">);</span>  <span class="c1">// Multiplying x with i / j  x = x*i/j;</span>
+                    <span class="c1">// If j &lt; 1, this operation does just x = x * i;</span>
+<span class="nx">longnull</span><span class="p">(</span><span class="nx">x</span><span class="p">)</span>         <span class="c1">// Tests for 0               (x == 0) </span>
+</pre></div>
+    <p> 
+    One can use the <code>longnull()</code> command in while loops for testing
+    whether a certain value has been reached. Sample statements:
+    </p>
+<div class="highlight"><pre><span class="nx">longinit</span><span class="p">(</span><span class="nx">x</span><span class="p">,</span> <span class="mi">200</span><span class="p">,</span> <span class="mi">345</span> <span class="o">*</span> <span class="mi">678</span><span class="p">);</span>
+<span class="kd">var</span> <span class="nx">n</span> <span class="o">=</span> <span class="mi">3</span><span class="p">;</span>
+<span class="k">while</span><span class="p">(</span><span class="o">!</span><span class="nx">longnull</span><span class="p">(</span><span class="nx">y</span><span class="p">))</span>
+<span class="p">{</span>
+    <span class="nx">longadd</span><span class="p">(</span><span class="nx">x</span><span class="p">,</span> <span class="nx">y</span><span class="p">);</span>
+    <span class="nx">longmult</span><span class="p">(</span><span class="nx">y</span><span class="p">,</span> <span class="mi">4</span><span class="p">,</span> <span class="nx">n</span><span class="p">);</span>
+    <span class="nx">n</span> <span class="o">=</span> <span class="nx">n</span> <span class="o">+</span> <span class="mi">3</span><span class="p">;</span>
+<span class="p">}</span>
+<span class="nx">longprint</span><span class="p">(</span><span class="nx">x</span><span class="p">);</span> 
+</pre></div>
+    <p>
+    For further examples, see the routines already coded in the source code of
+    the main program after the corresponding <code>document.write()</code>
+    command.
+    </p>
+</li>
+<li>
+    <div>Compute Euler's Function</div>
+    <p>
+    Euler's Number e is just the value e<sup>1</sup> of the exponential
+    function. This function is an infinite sum:
+    </p>
+
+    <math mode="display"><mrow>
+        <msup>
+            <mi>e</mi>
+            <mfrac bevelled="true">
+                <mi>i</mi>
+                <mi>j</mi>
+            </mfrac>
+        </msup>
+        <mo>=</mo>
+        <mn>1</mn>
+        <mo>+</mo>
+        <mfrac>
+            <msup>
+                <mi>i</mi>
+                <mn>1</mn>
+            </msup>
+            <mrow>
+                <msup>
+                    <mi>j</mi>
+                    <mn>1</mn>
+                </msup>                    
+                <mo>×</mo>
+                <mn>1</mn>
+                <mo>!</mo>
+            </mrow>
+        </mfrac>
+        <mo>+</mo>
+        <mfrac>
+            <msup>
+                <mi>i</mi>
+                <mn>2</mn>
+            </msup>
+            <mrow>
+                <msup>
+                    <mi>j</mi>
+                    <mn>2</mn>
+                </msup>
+                <mo>×</mo>
+                <mn>2</mn>
+                <mo>!</mo>
+            </mrow>
+        </mfrac>
+        <mo>+</mo>
+        <mfrac>
+            <msup>
+                <mi>i</mi>
+                <mn>3</mn>
+            </msup>
+            <mrow>
+                <msup>
+                    <mi>j</mi>
+                    <mn>3</mn>
+                </msup>
+                <mo>×</mo>
+                <mn>3</mn>
+                <mo>!</mo>
+            </mrow>
+        </mfrac>
+        <mo>+</mo>
+        <mi>…</mi>
+    </mrow></math>
+
+    <p>
+    One can compute it iteratively by an algorithm which could be written as
+    the following pseudo-code:
+    </p>
+<pre class="pseudocode">x = 0; y = 1; n = 1;
+while(y &gt;= 10000<sup>-305</sup>)
+{
+    x = x + y;
+    y = y * i / (j * n);
+    n = n + 1;
+}</pre>
+    <p>
+    where the number y becomes 0 when it falls below 10000 to the power of -305.
+    More precisely, if y comes very close to 0 such that no digit of the
+    representative is different from it, one can stop the summation. This
+    algorithm is implemented as follows. Note that <code>!</code> denotes the
+    logical negation in JavaScript programs:
+    </p>
+<div class="highlight"><pre><span class="nx">longinit</span><span class="p">(</span><span class="nx">x</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">);</span>
+<span class="nx">longinit</span><span class="p">(</span><span class="nx">y</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">);</span>
+<span class="nx">n</span> <span class="o">=</span> <span class="mi">1</span><span class="p">;</span>
+<span class="k">while</span><span class="p">(</span><span class="o">!</span><span class="nx">longnull</span><span class="p">(</span><span class="nx">y</span><span class="p">))</span>
+<span class="p">{</span>
+    <span class="nx">longadd</span><span class="p">(</span><span class="nx">x</span><span class="p">,</span> <span class="nx">y</span><span class="p">);</span>
+    <span class="nx">longmult</span><span class="p">(</span><span class="nx">y</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="nx">n</span><span class="p">);</span>
+    <span class="nx">n</span> <span class="o">=</span> <span class="nx">n</span> <span class="o">+</span> <span class="mi">1</span><span class="p">;</span>
+<span class="p">}</span>
+<span class="nx">longprint</span><span class="p">(</span><span class="nx">x</span><span class="p">);</span> 
+</pre></div>
+    <p>
+    Adapt these commands such that not e but its square is computed. So
+    <code>y</code> should be multiplied with 2/n and not with 1/n in each
+    round. If all implemented well, the displayed number should have 77157 as
+    the last digits.
+    </p>
+</li>
+<li>
+    <div>Computing the 1000-th power of a number</div>
+    <p>
+    This routine implements the following algorithm to compute
+    2<sup>1000</sup>. It initializes <code>y</code> as 1 and then multiplies it
+    with 1024 in total 100 times. Since the algorithm needs a lot of time, it
+    is better to do 100 than 1000 multiplications and to apply the equation
+    2<sup>1000</sup>&nbsp;= 2<sup>10×100</sup>&nbsp;=
+    (2<sup>10</sup>)<sup>100</sup>&nbsp;= 1024<sup>100</sup>.
+    </p>
+    <p>
+    Change the algorithm such that it computes 3<sup>1000</sup> instead of
+    2<sup>1000</sup>. You can use that 3<sup>10</sup>&nbsp;= 59049. If all
+    implemented well, the displayed number should be an integer and have 20001
+    as its last digits.
+    </p>
+</li>
+<li>
+    <div>Computing the arctangent</div>
+    <p>
+    Inverting the tangent function is one method to compute famous numbers.
+    One of these numbers has the value
+    24&nbsp;×&nbsp;arctan(1/8)&nbsp;+
+     8&nbsp;×&nbsp;arctan(1/57)&nbsp;+
+     4&nbsp;×&nbsp;arctan(1/239).
+    Euler found the following method to compute these values:
+    </p>
+
+    <math mode="display"><mrow>
+        <mi>h</mi>
+        <mo>=</mo>
+        <mn>1</mn>
+        <mo>/</mo>
+        <mfenced>
+            <mrow>
+                <msup>
+                    <mi>k</mi>
+                    <mn>2</mn>
+                </msup>
+                <mo>+</mo>
+                <mn>1</mn>
+            </mrow>
+        </mfenced>
+    </mrow></math>
+    
+    <math mode="display"><mrow>
+        <mi>arctan</mi>
+        <mfenced><mfrac><mn>1</mn><mi>k</mi></mfrac></mfenced>
+        <mo>=</mo>
+        <mi>k</mi>
+        <mo>×</mo>
+        <mfenced><mrow>
+            <mi>h</mi>
+            <mo>+</mo>
+            <msup><mi>h</mi><mn>2</mn></msup>
+            <mo>×</mo>
+            <mfrac>
+                <mn>2</mn>
+                <mn>3</mn>
+            </mfrac>
+            <mo>+</mo>
+            <msup><mi>h</mi><mn>3</mn></msup>
+            <mo>×</mo>
+            <mfrac>
+                <mrow><mn>2</mn><mo>×</mo><mn>4</mn></mrow>
+                <mrow><mn>3</mn><mo>×</mo><mn>5</mn></mrow>
+            </mfrac>
+            <mo>+</mo>
+            <msup><mi>h</mi><mn>4</mn></msup>
+            <mo>×</mo>
+            <mfrac>
+                <mrow><mn>2</mn><mo>×</mo><mn>4</mn><mo>×</mo><mn>5</mn></mrow>
+                <mrow><mn>3</mn><mo>×</mo><mn>5</mn><mo>×</mo><mn>7</mn></mrow>
+            </mfrac>
+            <mo>+</mo>
+            <mi>…</mi>
+        </mrow></mfenced>
+    </mrow></math>
+
+    <p>
+    The implemented algorithm to compute 24&nbsp;×&nbsp;arctan(1/8) is then the
+    following:
+    </p>
+<div class="highlight"><pre><span class="nx">longinit</span><span class="p">(</span><span class="nx">x</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">);</span>
+<span class="nx">longinit</span><span class="p">(</span><span class="nx">u</span><span class="p">,</span> <span class="mi">24</span> <span class="o">*</span> <span class="mi">8</span><span class="p">,</span> <span class="mi">65</span><span class="p">);</span>
+<span class="nx">n</span> <span class="o">=</span> <span class="mi">3</span><span class="p">;</span>
+<span class="nx">m</span> <span class="o">=</span> <span class="mi">2</span><span class="p">;</span>
+<span class="k">while</span><span class="p">(</span><span class="o">!</span><span class="nx">longnull</span><span class="p">(</span><span class="nx">u</span><span class="p">))</span>
+<span class="p">{</span>
+    <span class="nx">longadd</span><span class="p">(</span><span class="nx">x</span><span class="p">,</span> <span class="nx">u</span><span class="p">);</span>
+    <span class="nx">longmult</span><span class="p">(</span><span class="nx">u</span><span class="p">,</span> <span class="nx">m</span><span class="p">,</span> <span class="nx">n</span> <span class="o">*</span> <span class="mi">65</span><span class="p">);</span>
+    <span class="nx">n</span> <span class="o">=</span> <span class="nx">n</span> <span class="o">+</span> <span class="mi">2</span><span class="p">;</span>
+    <span class="nx">m</span> <span class="o">=</span> <span class="nx">m</span> <span class="o">+</span> <span class="mi">2</span><span class="p">;</span>
+<span class="p">}</span>
+<span class="nx">longprint</span><span class="p">(</span><span class="nx">x</span><span class="p">);</span>
+</pre></div>
+    <p>
+    So <code>x</code> is initialized as 0 and should later contain 24&nbsp;×&nbsp;arctan(1/8).
+    The <code>u</code> variable contains the 24 times k times the
+    term to be added, this multiple can be used due to the distributivity of
+    the infinite sum. In each round, <code>u</code> is multiplied with <code>m</code>
+    and divided by n&nbsp;×&nbsp;(k&nbsp;×&nbsp;k&nbsp;+&nbsp;1) where
+    k&nbsp;=&nbsp;8 and k&nbsp;×&nbsp;k&nbsp;+&nbsp;1&nbsp;=&nbsp;65.
+    </p>
+    <p>
+    Update this algorithm by also considering the <code>v</code> and
+    <code>w</code> variables which contain the terms belonging to arctan(1/57)
+    and arctan(1/239) which should be added to <code>x</code> as well. These
+    variables should be initialized as 8&nbsp;×&nbsp;57&nbsp;/&nbsp;3250 and
+    4&nbsp;×&nbsp;239&nbsp;/&nbsp;57122, respectively. You can either update
+    them in the same loop or write additional loops for <code>v</code> and
+    <code>w</code>. Here 57 and 239 are the values for k and 3250 and 57122 for
+    k&nbsp;×&nbsp;k&nbsp;+&nbsp;1, respectively.
+    </p>
+    <p>
+    If all is implemented well, the final outcome should have the digits 01989
+    at the end. Which number did you obtain?
+    </p>
+</li>
+</ol>
+
+<div id="jscode">
+<div>JavaScript Starts Here.</div>
+<div>
+<script>
+var longlength = 305;
+var dcmlpoint = 100;
+function longsubdiv(a,j)
+{
+    var carry = 0;
+    var postn = 0;
+    while (postn < longlength)
+    {
+        carry = 100000 * carry + a[postn];
+        a[postn] = Math.floor(carry / j);
+        carry = carry % j;
+        postn++;
+    }
+}
+
+function longnegate(a)
+{
+    var carry = 0;
+    var postn = longlength;
+    while(postn > 0)
+    {
+        postn--;
+        if((carry + a[postn]) > 0)
+        {
+            a[postn] = 100000 - a[postn] - carry;
+            carry = 1;
+        }
+    }
+}
+
+function longinit(a, i, j)
+{
+    var postn = longlength;
+    var carry = 0;
+    var k = Math.round(i);
+    if(k < 0)
+    {
+        k = -k;
+    }
+
+    while(postn > 0)
+    {
+        if (postn == dcmlpoint)
+        {
+            carry = k;
+        }
+        postn = postn - 1;
+        a[postn] = carry % 100000;
+        carry = Math.floor(carry / 100000);
+    }
+
+    if(j > 1.6)
+    {
+        k = Math.round(j);
+        longsubdiv(a, k);
+    }
+    if(i < 0)
+    {
+        longnegate(a);
+    }
+}
+
+function longsubprint(b)
+{
+    var c = "" + b;
+    switch(c.length)
+    {
+        case 1: document.write(" 0000" + c); break;
+        case 2: document.write(" 000" + c); break;
+        case 3: document.write(" 00" + c); break;
+        case 4: document.write(" 0" + c); break;
+        default: document.write(" " + c); break;
+    }
+}
+
+function longposprint(a, c)
+{
+    var d = c; var i = 0; var j = longlength - 6;
+    while((j >= dcmlpoint) && (a[j] == 0))
+    {
+        j--;
+    }
+    while((i < dcmlpoint - 2) && (a[i] == 0))
+    {
+        i++;
+    }
+    var postn = 10 * Math.floor(i / 10);
+    while(postn <= j)
+    {
+        document.write(d + " "); d = " ";
+        longsubprint(a[postn]);
+        longsubprint(a[postn+1]);
+        longsubprint(a[postn+2]);
+        longsubprint(a[postn+3]);
+        longsubprint(a[postn+4]);
+        longsubprint(a[postn+5]);
+        longsubprint(a[postn+6]);
+        longsubprint(a[postn+7]);
+        longsubprint(a[postn+8]);
+        longsubprint(a[postn+9]);
+        postn = postn + 10; 
+        if((postn == dcmlpoint) && (postn <= j))
+        {
+            document.write(".<br/>");
+        }
+        else
+        {
+            document.write("<br/>");
+        }
+    } 
+}
+
+function longprint(a)
+{
+    if(a[0] > 49999)
+    {
+        longnegate(a);
+        longposprint(a, "-");
+        longnegate(a);
+    }
+    else
+    {
+        longposprint(a, "+");
+    }
+}
+
+function longadd(a, b)
+{
+    var postn = longlength;
+    var carry = 0;
+    while(postn > 0)
+    {
+        postn--;
+        carry = carry + a[postn] + b[postn];
+        a[postn] = carry % 100000;
+        carry = Math.floor(carry / 100000);
+    }
+}
+
+function longsub(a, b)
+{
+    var postn = longlength;
+    var carry = 0;
+    while (postn > 0)
+    {
+        postn--;
+        carry = 100000 + carry + a[postn] - b[postn];
+        a[postn] = carry % 100000;
+        carry = Math.floor(carry / 100000) - 1;
+    }
+}
+ 
+function longmult(a, i, j)
+{
+    var carry = 0;
+    var postn = longlength;
+    k = Math.round(i);
+    if(k < 0)
+    {
+        k = -k;
+    }
+    if(k > 1)
+    {
+        while(postn > 0)
+        {
+            postn--;
+            carry = carry + a[postn] * k;
+            a[postn] = carry % 100000;
+            carry = Math.floor(carry / 100000);
+        }
+    }
+    else if(k == 0)
+    {
+        longinit(a, 0, 0);
+    }
+    k = Math.round(j);
+    if(k > 1)
+    {
+        if(a[0] < 50000)
+        {
+            longsubdiv(a, k);
+        }
+        else
+        {
+            longnegate(a);
+            longsubdiv(a, k);
+            longnegate(a);
+        }
+    }
+    if(i < 0)
+    {
+        longnegate(a);
+    }
+}
+
+function longnull(a)
+{
+    var rvalue = 1;
+    var postn = longlength;
+    while (postn > 0)
+    {
+        postn--;
+        if(a[postn] != 0)
+        {
+            rvalue = 0;
+        }
+    }
+    return rvalue;
+}
+
+document.write("<pre>Main program starts here.<br/>");
+
+var x = new Array(longlength);
+var y = new Array(longlength);
+var u = new Array(longlength);
+var v = new Array(longlength);
+var w = new Array(longlength);
+var n = 1;
+var m;
+
+document.write("Computing Euler's Number square.<br/>");
+longinit(x, 0, 0);
+longinit(y, 1, 0);
+while(!longnull(y))
+{
+    longadd(x, y);
+    longmult(y, 2, n);
+    n = n + 1;
+}
+longprint(x);
+
+document.write("Computing the 1000-th power of 3.<br/>");
+longinit(x, 1, 0);
+for(n = 0; n < 100; n = n + 1)
+{
+    longmult(x, 59049, 1);
+}
+longprint(x);
+
+document.write("Computing 24*Arctan(1/8)+8*Arctan(1/57)+4*Arctan(1/239).<br/>");
+longinit(x, 0, 0);
+longinit(u, 24 * 8, 65);
+longinit(v, 57 * 8, 3250);
+longinit(w, 4 * 239, 57122);
+n = 3;
+m = 2;
+while(!longnull(u))
+{
+    longadd(x, u);
+    longadd(x,v);
+    longadd(x,w);
+    longmult(u, m, n * 65);
+    longmult(v, m, n * 3250);
+    longmult(w, m, n * 57122);
+    n = n + 2;
+    m = m + 2;
+}
+longprint(x);
+
+document.write("Main program ends here.</pre>");
+</script>
+</div>
+<div>JavaScript Ends Here.</div>
+</div>
+
+
+
+
+</body></html>
