@@ -1,0 +1,16 @@
+#include <stdio.h>
+#include <math.h>
+int main(void)
+{
+    double sum=0,n,x=1;
+    printf("enter the number of terms n you would like to compute:");
+	scanf("%lf",&n);
+    while (x<=n)
+    {
+	sum=sum+(4/(2*x-1))*pow(-1,x+1);
+	x++;
+    }
+    printf("PI:%f",sum);
+	return 0;
+}
+
