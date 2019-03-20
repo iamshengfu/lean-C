@@ -7,67 +7,70 @@
 
 
 long clong(char c){
-    int ai;
+    long ai;
     long bi;
     ai = c - 48;
     bi = (long)ai;
     return bi;
 }
 
-int decompose(char * s,long * nb);
-void init_str(char * a, int d);
-void init_nb(long * nb, int d);
-void addition(long * a, long * b, long * carry, long * result);
- 
-int main() 
+long decompose(char * s,long * nb);
+void init_str(char * a, long d);
+void init_nb(long * nb, long d);
+long * addition(long * a, long * b);
+void copyfromto(long * src, long * dst, long len);
+long * shortmultiply(long * a, long b);
+long * longmultiply(long * a, long * b);
+long * shiftleft(long * a, long len, long shiftdistance);
+long findlen(long * a);
+void printresult(long * a);
+
+long main() 
 {
-    long result[digit/4];
+    long * result = malloc(digit/4 * sizeof(long));
 	char s1[digit]= "aaa";
     long nb1[digit/4];
 	char s2[digit]= "aaa";
     long nb2[digit/4];
-	long carry[digit/4];
-    int i1;
-	int i2;
-    int j;
+	//long carry[digit/4];
+    long i1;
+	long i2;
+    long j;
 	
 	init_str(s1,digit);
-	init_str(s2,digit);
-	init_nb(result,digit/4);
+	init_str(s2,digit); 
+	
 	init_nb(nb1,digit/4);
 	init_nb(nb2,digit/4);
-	init_nb(carry,digit/4);
+	//init_nb(carry,digit/4);
 	
 	scanf("%s",s1);
 	scanf("%s",s2);
 	
 	i1 = decompose(s1,nb1);
 	i2 = decompose(s2,nb2);
-    
-	addition(nb1,nb2,carry,result);
-	
-	for(j=digit/4-1 ;j>=0;j--){
-		if(result[j] != 0){
-			printf("%ld", result[j]);
-		}		
-	}
+
+	copyfromto(longmultiply(nb1,nb2),result, digit/4);
+	printf("\nResult > ");
+    printresult(result);
+    printf(" <Result");
 	
     //for(j=ceil(i1/4.0)-2;j>=0;j--){
-    //  printf("%ld", nb1[j]); 
+    //  prlongf("%ld", nb1[j]); 
     //}
     
     return 0;
 }
 
-int decompose(char * s,long * nb){
+long decompose(char * s,long * nb){
 	
-	int i,j,tmp;
-	int k = 0;
+	long i,j,tmp;
+	long k = 0;
 	long a1 =0 ,a2 = 0 ,a3 =0 ,a4 = 0;
 	
 	for(i=0;i<digit;i++){
 		if(isdigit(s[i])){
-			printf("%c \n", s[i]);
+			;
 		} else {
 			break;
 		}     
@@ -98,23 +101,43 @@ int decompose(char * s,long * nb){
 	return tmp;
 }
 
-void init_str(char * a, int d){
-	int i;
+void init_str(char * a, long d){
+	long i;
 	for(i=0;i<d;i++){
 		a[i] = 's';
 	}
 }	
 
-void init_nb(long * nb, int d){
-	int i;
+void init_nb(long * nb, long d){
+	long i;
 	for(i=0;i<d;i++){
 		nb[i] = 0;
 	}
 }	
 
-void addition(long * a, long * b, long * carry, long * result){
-	int j;
+long findlen(long * a){
+    long a_len;
+
+    for(a_len=0;a_len<digit/4;a_len++){
+        if(a[digit/4-1-a_len] != 0){
+            break;
+        }
+    }
+
+    return digit/4-1-a_len;
+}
+
+
+
+
+long * addition(long * a, long * b){
+	long j;
 	long tmp;
+    long carry[digit/4];
+    static long result[digit/4];
+    init_nb(carry,digit/4);
+    init_nb(result,digit/4);
+    
 	for(j=0; j<digit/4 ; j++){
 		
 		tmp = a[j] + b [j] + carry[j];
@@ -124,5 +147,89 @@ void addition(long * a, long * b, long * carry, long * result){
 		} else {
 			result[j] = tmp;
 		}
-	}			
+	}
+    return result;
+}
+
+long * shortmultiply(long * a, long b){
+    static long result[digit/4];
+    long i,len,tmp;
+    long carry[digit/4];
+    init_nb(result,digit/4);
+    init_nb(carry,digit/4);
+    for(i=digit/4-1;i>=0;i++){
+        if(a[i]==0){
+            len = i;
+            break;
+        }
+    }
+    for(i=0;i<len;i++){
+        tmp = a[i] * b;
+        result[i] = tmp%10000;
+        carry[i+1]= tmp/10000;
+    }
+        
+    return addition(result, carry);
+}
+
+long * longmultiply(long * a, long * b){
+    long i;
+    long len_b;
+    long tmp[digit/4], tmp2[digit/4];    
+    static long result[digit/4];
+    len_b = findlen(b);
+    for(i=0;i<=len_b;i++){
+        copyfromto(shortmultiply(shiftleft(a,len_b,i), b[i]),tmp,digit/4);
+        printf("a >> ");
+        printresult(a);
+        printf(" <<a ");
+        printf("tmp1 result >> ");
+        printresult(tmp);
+        printf(" <<tmp1 result ");
+        copyfromto(addition(tmp,result),result,digit/4);
+        printf("tmp2 result >> ");
+        printresult(result);
+        printf(" <<tmp2 result ");
+        
+    }
+    return result;
+}
+
+void copyfromto(long * src, long * dst, long len){
+    long i;
+    for(i=0;i<len;i++){
+        dst[i] = src[i];        
+    }
+}
+
+long * shiftleft(long * a, long len, long shiftdistance){
+    if(shiftdistance>0){
+        static long tmp[digit/4];
+        long i;
+        copyfromto(a,tmp,digit/4);
+        a[0]=0;
+
+        
+        for(i=1;i<=len+5;i++){
+            a[i] = tmp[i-1];
+        }
+        
+        //printresult(a);
+        printf("\n");
+        return tmp;
+    }else{
+        return a;
+    }
+}
+
+void printresult(long * result){
+    long j;
+    long a = findlen(result);
+    for(j=a ;j>=0;j--){
+        if(result[j]==0){
+            printf("0000");
+        }else{
+            printf("%ld", result[j]);
+        }        	
+	}
 }
