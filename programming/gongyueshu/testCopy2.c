@@ -3,7 +3,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include <ctype.h>
-#define digit 300 
+#define digit 3000 
 
 
 long clong(char c){
@@ -51,6 +51,7 @@ long main()
 	i2 = decompose(s2,nb2);
 
 	copyfromto(longmultiply(nb1,nb2),result, digit/4);
+    //copyfromto(addition(nb1,nb2),result, digit/4);
 	printf("\nResult > ");
     printresult(result);
     printf(" <Result");
@@ -59,7 +60,7 @@ long main()
     //  prlongf("%ld", nb1[j]); 
     //}
     
-    return 0;
+    return 0;  
 }
 
 long decompose(char * s,long * nb){
@@ -131,14 +132,18 @@ long findlen(long * a){
 
 
 long * addition(long * a, long * b){
-	long j;
+	long j,len_a,len_b;
 	long tmp;
     long carry[digit/4];
     static long result[digit/4];
     init_nb(carry,digit/4);
     init_nb(result,digit/4);
-    
-	for(j=0; j<digit/4 ; j++){
+    len_a = findlen(a);
+    len_b = findlen(b);
+    if(len_a<len_b){
+        len_a = len_b;
+    }
+	for(j=0; j<=len_a ; j++){
 		
 		tmp = a[j] + b [j] + carry[j];
 		if(tmp > 9999){
@@ -157,18 +162,13 @@ long * shortmultiply(long * a, long b){
     long carry[digit/4];
     init_nb(result,digit/4);
     init_nb(carry,digit/4);
-    for(i=digit/4-1;i>=0;i++){
-        if(a[i]==0){
-            len = i;
-            break;
-        }
-    }
-    for(i=0;i<len;i++){
+    len = findlen(a);
+    printf("\n short multiply len = %ld", len);
+    for(i=0;i<=len;i++){
         tmp = a[i] * b;
         result[i] = tmp%10000;
         carry[i+1]= tmp/10000;
     }
-        
     return addition(result, carry);
 }
 
@@ -179,7 +179,11 @@ long * longmultiply(long * a, long * b){
     static long result[digit/4];
     len_b = findlen(b);
     for(i=0;i<=len_b;i++){
+        printf("\n a >>");
+        printresult(a);
         copyfromto(shortmultiply(shiftleft(a,len_b,i), b[i]),tmp,digit/4);
+        printf("\n tmp >>");
+        printresult(tmp);
         copyfromto(addition(tmp,result),result,digit/4);      
     }
     return result;
@@ -197,9 +201,7 @@ long * shiftleft(long * a, long len, long shiftdistance){
         static long tmp[digit/4];
         long i;
         copyfromto(a,tmp,digit/4);
-        a[0]=0;
-
-        
+        a[0]=0;       
         for(i=1;i<=len+5;i++){
             a[i] = tmp[i-1];
         }        
@@ -213,12 +215,27 @@ void printresult(long * result){
     long j,tmp = 0;
     long a = findlen(result);
     for(j=a ;j>=0;j--){
-        if(result[j]==0){
-            printf("0000");
+        if(j!=a){
+            if(result[j]==0){
+                printf("0000");
+            }
+            else if(result[j]<10){
+                printf("000%ld", result[j]);
+            }   
+            else if(result[j]<100){
+                printf("00%ld", result[j]);
+            } 
+            else if(result[j]<1000){
+                printf("0%ld", result[j]);
+            } 
+            else{
+                printf("%ld", result[j]);
+            }
         }else{
             printf("%ld", result[j]);
-        }        	
+        }
 	}
+    
     for(j=0;j<digit/4;j++){
         tmp += result[j];
     }
