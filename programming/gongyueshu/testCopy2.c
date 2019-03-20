@@ -180,17 +180,7 @@ long * longmultiply(long * a, long * b){
     len_b = findlen(b);
     for(i=0;i<=len_b;i++){
         copyfromto(shortmultiply(shiftleft(a,len_b,i), b[i]),tmp,digit/4);
-        printf("a >> ");
-        printresult(a);
-        printf(" <<a ");
-        printf("tmp1 result >> ");
-        printresult(tmp);
-        printf(" <<tmp1 result ");
-        copyfromto(addition(tmp,result),result,digit/4);
-        printf("tmp2 result >> ");
-        printresult(result);
-        printf(" <<tmp2 result ");
-        
+        copyfromto(addition(tmp,result),result,digit/4);      
     }
     return result;
 }
@@ -212,18 +202,15 @@ long * shiftleft(long * a, long len, long shiftdistance){
         
         for(i=1;i<=len+5;i++){
             a[i] = tmp[i-1];
-        }
-        
-        //printresult(a);
-        printf("\n");
-        return tmp;
-    }else{
-        return a;
+        }        
     }
+        
+    return a;
+
 }
 
 void printresult(long * result){
-    long j;
+    long j,tmp = 0;
     long a = findlen(result);
     for(j=a ;j>=0;j--){
         if(result[j]==0){
@@ -232,4 +219,10 @@ void printresult(long * result){
             printf("%ld", result[j]);
         }        	
 	}
+    for(j=0;j<digit/4;j++){
+        tmp += result[j];
+    }
+    if(tmp==0){
+        printf("0");
+    }
 }
