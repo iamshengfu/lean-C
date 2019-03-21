@@ -21,7 +21,7 @@ long * addition(long * a, long * b);
 void copyfromto(long * src, long * dst, long len);
 long * shortmultiply(long * a, long b);
 long * longmultiply(long * a, long * b);
-long * shiftleft(long * a, long len, long shiftdistance);
+long * shiftleft(long * a, long shiftdistance);
 long findlen(long * a);
 void printresult(long * a);
 
@@ -49,7 +49,7 @@ long main()
 	
 	i1 = decompose(s1,nb1);
 	i2 = decompose(s2,nb2);
-
+    
 	copyfromto(longmultiply(nb1,nb2),result, digit/4);
     //copyfromto(addition(nb1,nb2),result, digit/4);
 	printf("\nResult > ");
@@ -163,7 +163,7 @@ long * shortmultiply(long * a, long b){
     init_nb(result,digit/4);
     init_nb(carry,digit/4);
     len = findlen(a);
-    printf("\n short multiply len = %ld", len);
+    //printf("\n short multiply len = %ld", len);
     for(i=0;i<=len;i++){
         tmp = a[i] * b;
         result[i] = tmp%10000;
@@ -179,11 +179,7 @@ long * longmultiply(long * a, long * b){
     static long result[digit/4];
     len_b = findlen(b);
     for(i=0;i<=len_b;i++){
-        printf("\n a >>");
-        printresult(a);
-        copyfromto(shortmultiply(shiftleft(a,len_b,i), b[i]),tmp,digit/4);
-        printf("\n tmp >>");
-        printresult(tmp);
+        copyfromto(shortmultiply(shiftleft(a,i), b[i]),tmp,digit/4);
         copyfromto(addition(tmp,result),result,digit/4);      
     }
     return result;
@@ -196,13 +192,14 @@ void copyfromto(long * src, long * dst, long len){
     }
 }
 
-long * shiftleft(long * a, long len, long shiftdistance){
+long * shiftleft(long * a, long shiftdistance){
     if(shiftdistance>0){
         static long tmp[digit/4];
-        long i;
+        long i,len;
+        len =findlen(a);
         copyfromto(a,tmp,digit/4);
         a[0]=0;       
-        for(i=1;i<=len+5;i++){
+        for(i=1;i<=len+2;i++){
             a[i] = tmp[i-1];
         }        
     }
