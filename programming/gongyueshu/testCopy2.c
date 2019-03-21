@@ -24,6 +24,11 @@ long * longmultiply(long * a, long * b);
 long * shiftleft(long * a, long shiftdistance);
 long findlen(long * a);
 void printresult(long * a);
+int compare(long * a, long * b);
+long * subtract(long * a, long * b);
+long * g_middle(long * a, long * b);
+long * divisible(long * a, long * b);
+long * divide(long * a, long b);
 
 long main() 
 {
@@ -50,11 +55,11 @@ long main()
 	i1 = decompose(s1,nb1);
 	i2 = decompose(s2,nb2);
     
-	copyfromto(longmultiply(nb1,nb2),result, digit/4);
+	copyfromto(g_middle(nb1,nb2),result, digit/4);
     //copyfromto(addition(nb1,nb2),result, digit/4);
-	printf("\nResult > ");
+	//printf("\nResult > ");
     printresult(result);
-    printf(" <Result");
+    //printf(" <Result");
 	
     //for(j=ceil(i1/4.0)-2;j>=0;j--){
     //  prlongf("%ld", nb1[j]); 
@@ -134,9 +139,8 @@ long findlen(long * a){
 long * addition(long * a, long * b){
 	long j,len_a,len_b;
 	long tmp;
-    long carry[digit/4];
+    long carry=0;
     static long result[digit/4];
-    init_nb(carry,digit/4);
     init_nb(result,digit/4);
     len_a = findlen(a);
     len_b = findlen(b);
@@ -145,13 +149,10 @@ long * addition(long * a, long * b){
     }
 	for(j=0; j<=len_a ; j++){
 		
-		tmp = a[j] + b [j] + carry[j];
-		if(tmp > 9999){
-			result[j] = tmp - 10000;
-			carry[j+1] = 1;
-		} else {
-			result[j] = tmp;
-		}
+		tmp = a[j] + b [j] + carry;
+        result[j] = tmp % 10000;
+        carry = tmp/10000;
+
 	}
     return result;
 }
@@ -239,4 +240,89 @@ void printresult(long * result){
     if(tmp==0){
         printf("0");
     }
+}
+
+int compare(long * a, long * b){
+    int L1 = findlen(a);
+    int L2 = findlen(b);
+    int i;
+    if(L1>L2){
+        return 0;
+    }else if(L2>L1){
+        return 1;
+    }else if(L2==L1){
+        for(i=L1;i>=0;i--){
+            if(a[i]>b[i])
+            {
+                return 0;
+            }
+            else if(a[i]<b[i]) 
+            {
+                return 1;
+            }
+        }
+        return 2;
+    }
+    return 100;
+}
+
+long * divisible(long * a, long * b){
+    
+}
+
+long * g_middle(long * a, long * b){
+    long L1 = findlen(a);
+    long L2 = findlen(b);
+    long ab = L1-L2;
+    long uu[digit/4];
+    long nn[digit/4];
+    static mid[digit/4];
+    long i;
+    init_nb(mid,digit/4);
+    init_nb(uu,digit/4);
+    init_nb(nn,digit/4);
+    uu[0]=1;
+    nn[0]=1;
+    if(ab>0)
+    {
+        for(i=0;i<=ab+1;i++){
+            shiftleft(uu,i);
+        }
+        for(i=0;i<=ab-1;i++){
+            shiftleft(nn,i);
+        }
+    }
+    return divide(subtract(uu,nn),2);
+}
+
+long * subtract(long * a, long * b){
+    long L1 = findlen(a);
+    long L2 = findlen(b);
+    long i,tmp;
+    static long result[digit/4];
+    long carry=0;
+    init_nb(result, digit/4);
+    if(L1<L2){
+        L1 = L2;
+    }
+    for(i=0;i<=L1;i++){
+        tmp = 10000 + carry + a[i] - b [i];
+        result[i] = tmp % 10000;
+        carry = floor(tmp/10000)-1;
+    }
+    return result;
+}
+
+long * divide(long * a, long b){
+    long L1 = findlen(a);
+    long i,rmd,tmp;
+    rmd=0;
+    static long result[digit/4];
+    init_nb(result,digit/4);
+    for(i=L1;i>=0;i--){
+        tmp = a[i] + rmd*10000;
+        a[i] = floor(tmp/b);
+        rmd = tmp%b;
+    }
+    return a;
 }
