@@ -21,7 +21,8 @@ long * addition(long * a, long * b);
 void copyfromto(long * src, long * dst, long len);
 long * shortmultiply(long * a, long b);
 long * longmultiply(long * a, long * b);
-long * shiftleft(long * a, long shiftdistance);
+long * shiftleftonce(long * a, long shiftindicator);
+long * shiftright(long * a, long shiftdistance);
 long findlen(long * a);
 void printresult(long * a);
 int compare(long * a, long * b);
@@ -29,6 +30,9 @@ long * subtract(long * a, long * b);
 long * g_middle(long * a, long * b);
 long * divisible(long * a, long * b);
 long * divide(long * a, long b);
+long * lowerb(long * a, long * b);
+long * upperb(long * a, long * b);
+long isempty(long * a);
 
 long main() 
 {
@@ -55,7 +59,7 @@ long main()
 	i1 = decompose(s1,nb1);
 	i2 = decompose(s2,nb2);
     
-	copyfromto(g_middle(nb1,nb2),result, digit/4);
+	copyfromto(lowerb(nb1,nb2),result, digit/4);
     //copyfromto(addition(nb1,nb2),result, digit/4);
 	//printf("\nResult > ");
     printresult(result);
@@ -178,9 +182,10 @@ long * longmultiply(long * a, long * b){
     long len_b;
     long tmp[digit/4], tmp2[digit/4];    
     static long result[digit/4];
+    copyfromto(a,tmp2,digit/4);
     len_b = findlen(b);
     for(i=0;i<=len_b;i++){
-        copyfromto(shortmultiply(shiftleft(a,i), b[i]),tmp,digit/4);
+        copyfromto(shortmultiply(shiftleftonce(tmp2,i), b[i]),tmp,digit/4);
         copyfromto(addition(tmp,result),result,digit/4);      
     }
     return result;
@@ -193,8 +198,8 @@ void copyfromto(long * src, long * dst, long len){
     }
 }
 
-long * shiftleft(long * a, long shiftdistance){
-    if(shiftdistance>0){
+long * shiftleftonce(long * a, long shiftindicator){
+    if(shiftindicator>0){
         static long tmp[digit/4];
         long i,len;
         len =findlen(a);
@@ -203,10 +208,19 @@ long * shiftleft(long * a, long shiftdistance){
         for(i=1;i<=len+2;i++){
             a[i] = tmp[i-1];
         }        
-    }
-        
+    }       
     return a;
+}
 
+long * shiftright(long * a, long shiftdistance){
+    static long tmp[digit/4];
+    long i;
+    init_nb(tmp,digit/4);
+
+    for(i=0;i<digit/4-shiftdistance;i++){
+        tmp[i] = a[i+shiftdistance];
+    }
+    return tmp;
 }
 
 void printresult(long * result){
@@ -267,8 +281,91 @@ int compare(long * a, long * b){
 }
 
 long * divisible(long * a, long * b){
+    if(compare(a,b)==1){
+        return 0;
+    }
+    static long ret[digit/4];
+    init_nb(ret,digit/4);
+    long Ub[digit/4];
+    long Lb[digit/4];
+    long tmp[digit/4];
+    static long mid[digit/4];
+    long lmt[digit/4];
+    long cp,cp1;
+    init_nb(Ub,digit/4);
+    init_nb(Lb,digit/4);
+    init_nb(tmp,digit/4);
+    init_nb(mid,digit/4);
+    init_nb(lmt,digit/4);
+    copyfromto(upperb(a,b),Ub,digit/4);
+    copyfromto(lowerb(a,b),Lb,digit/4);
     
+    while(cp1!=2){
+        
+        copyfromto(divide(addition(Ub,Lb),2),mid,digit/4);
+        copyfromto(longmultiply(b,mid),lmt,digit/4);
+        cp = compare(a,lmt);
+        cp1 = compare(Ub,Lb);
+        if(cp1 == 2 && cp != 2){
+            return ret;
+        }
+        if(cp==2){
+            return mid;
+        }else if(cp==0){
+            copyfromto(mid,Lb,digit/4);
+        }else if(cp==1){
+            copyfromto(mid,Ub,digit/4);
+        }
+
+    }
+    return ret;
 }
+
+long isempty(long * a){
+    long i;
+    long z=0;
+    for(i=0;i<digit/4;i++){
+        if(a[i]!=0){
+            return 1;
+        }
+    }
+    return 0;
+}
+
+long * upperb(long * a, long * b){
+    if(compare(a,b)==1){
+        return 0;
+    }
+    long Lb = findlen(b);
+    long tmp[digit/4];
+    init_nb(tmp,digit/4);
+    static long tmp2[digit/4];
+    init_nb(tmp2,digit/4);
+    copyfromto(shiftright(a,Lb),tmp,digit/4);
+    tmp[0] += 1;
+    copyfromto(divide(tmp,b[Lb]),tmp2,digit/4);   
+    return tmp2;
+}
+
+long * lowerb(long * a, long * b){
+    if(compare(a,b)==1){
+        static long aaa[digit/4];
+        init_nb(aaa,digit/4);
+        return aaa;
+    }
+    long Lb = findlen(b);
+    //printf("len b = %ld ", Lb);
+    long tmp[digit/4];
+    init_nb(tmp,digit/4);
+    static long tmp2[digit/4];
+    init_nb(tmp2,digit/4);
+    long bb = b[Lb]+1;
+    //printf("long bb = %ld ", bb);
+    copyfromto(shiftright(a,Lb),tmp,digit/4);   
+    copyfromto(divide(tmp,bb),tmp2,digit/4);   
+    return tmp2;
+}
+
 
 long * g_middle(long * a, long * b){
     long L1 = findlen(a);
@@ -276,7 +373,7 @@ long * g_middle(long * a, long * b){
     long ab = L1-L2;
     long uu[digit/4];
     long nn[digit/4];
-    static mid[digit/4];
+    static long mid[digit/4];
     long i;
     init_nb(mid,digit/4);
     init_nb(uu,digit/4);
@@ -286,10 +383,10 @@ long * g_middle(long * a, long * b){
     if(ab>0)
     {
         for(i=0;i<=ab+1;i++){
-            shiftleft(uu,i);
+            shiftleftonce(uu,i);
         }
         for(i=0;i<=ab-1;i++){
-            shiftleft(nn,i);
+            shiftleftonce(nn,i);
         }
     }
     return divide(subtract(uu,nn),2);
