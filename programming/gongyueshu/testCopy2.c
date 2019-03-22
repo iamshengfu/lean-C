@@ -33,6 +33,7 @@ long * divide(long * a, long b);
 long * lowerb(long * a, long * b);
 long * upperb(long * a, long * b);
 long isempty(long * a);
+long isnearby(long * Ub, long * Lb);
 
 long main() 
 {
@@ -59,15 +60,15 @@ long main()
 	i1 = decompose(s1,nb1);
 	i2 = decompose(s2,nb2);
     
-	copyfromto(lowerb(nb1,nb2),result, digit/4);
+	copyfromto(divisible(nb1,nb2),result, digit/4);
     //copyfromto(addition(nb1,nb2),result, digit/4);
-	//printf("\nResult > ");
+	printf("\nResult > ");
     printresult(result);
-    //printf(" <Result");
+    printf(" <Result");
 	
-    //for(j=ceil(i1/4.0)-2;j>=0;j--){
-    //  prlongf("%ld", nb1[j]); 
-    //}
+
+    //printf("%ld", compare(nb1,nb2)); 
+
     
     return 0;  
 }
@@ -182,6 +183,9 @@ long * longmultiply(long * a, long * b){
     long len_b;
     long tmp[digit/4], tmp2[digit/4];    
     static long result[digit/4];
+    init_nb(tmp,digit/4);
+    init_nb(tmp2,digit/4);
+    init_nb(result,digit/4);
     copyfromto(a,tmp2,digit/4);
     len_b = findlen(b);
     for(i=0;i<=len_b;i++){
@@ -281,8 +285,11 @@ int compare(long * a, long * b){
 }
 
 long * divisible(long * a, long * b){
+    printf("compare a b = %ld", compare(a,b));
     if(compare(a,b)==1){
-        return 0;
+        static long xxx[digit/4];
+        init_nb(xxx,digit/4);
+        return xxx;
     }
     static long ret[digit/4];
     init_nb(ret,digit/4);
@@ -291,7 +298,7 @@ long * divisible(long * a, long * b){
     long tmp[digit/4];
     static long mid[digit/4];
     long lmt[digit/4];
-    long cp,cp1;
+    long cp,cp1,nearby;
     init_nb(Ub,digit/4);
     init_nb(Lb,digit/4);
     init_nb(tmp,digit/4);
@@ -301,10 +308,10 @@ long * divisible(long * a, long * b){
     copyfromto(lowerb(a,b),Lb,digit/4);
     
     while(cp1!=2){
-        
+        nearby = isnearby(Ub,Lb);
         copyfromto(divide(addition(Ub,Lb),2),mid,digit/4);
         copyfromto(longmultiply(b,mid),lmt,digit/4);
-        cp = compare(a,lmt);
+        cp = compare(a,lmt);       
         cp1 = compare(Ub,Lb);
         if(cp1 == 2 && cp != 2){
             return ret;
@@ -312,14 +319,38 @@ long * divisible(long * a, long * b){
         if(cp==2){
             return mid;
         }else if(cp==0){
-            copyfromto(mid,Lb,digit/4);
+            if(nearby==1){
+                copyfromto(Ub,Lb,digit/4);
+            }else{
+                copyfromto(mid,Lb,digit/4);
+            }
+            
         }else if(cp==1){
-            copyfromto(mid,Ub,digit/4);
+            if(nearby==1){
+                copyfromto(Lb,Ub,digit/4);
+            }else{
+                copyfromto(mid,Ub,digit/4);
+            }           
         }
-
     }
     return ret;
 }
+
+long isnearby(long * Ub, long * Lb){
+    long one[digit/4];
+    init_nb(one,digit/4);
+    one[0]=1;
+    long nn[digit/4];
+    copyfromto(addition(Lb,one),nn,digit/4);
+    long i;
+    for(i=0;i<digit/4;i++){
+        if(nn[i]!=Ub[i]){
+            return 0;
+        }
+    }
+    return 1;
+}
+
 
 long isempty(long * a){
     long i;
