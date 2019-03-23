@@ -5,23 +5,13 @@
 #include <ctype.h>
 #define digit 3000 
 
-long * retarray(long *);
+void printresult(char * c);
 
 int main (void){
-    long x[5]={1,2,3,4,5};
-    long * ptr;
-    long i;
-    i=0;
-    while(i<1000){
-        printf("\na");
-        ptr = retarray(x);
-        i++;
-    }
-    
-
+    printresult("aaabbbb");
+    return 0;
 }
 
-long * retarray(long * a){
-    static long aa[9] = {1,2,3,4,5,6,7,8,9};
-    return aa;
+void printresult(char * c){
+    printf("%s",c);
 }

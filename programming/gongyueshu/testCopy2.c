@@ -25,7 +25,7 @@ long * longmultiply(long * a, long * b);
 long * shiftleftonce(long * a, long shiftindicator);
 long * shiftright(long * a, long shiftdistance);
 long findlen(long * a);
-void printresult(long * a);
+void printresult(char * c, long * result);
 int compare(long * a, long * b);
 long * subtract(long * a, long * b);
 long * divisible(long * a, long * b);
@@ -36,6 +36,7 @@ long isempty(long * a);
 long isnearby(long * Ub, long * Lb);
 long * mysqrt(long * a);
 void findroot(long * a);
+long * longdivision(long * a, long * b);
 
 long main() 
 {
@@ -66,17 +67,17 @@ long main()
     
     //copyfromto(upperb(nb1,nb2),result,digit/4);
     //findroot(nb1);
-    printf("isempty %i",isempty(nb1));
+    //printf("isempty %i",isempty(nb1));
 	//copyfromto(mysqrt(nb1),result, digit/4);
-    //copyfromto(divisible(nb1,nb2),result, digit/4);
-	//printf("\nResult > ");
-    //printresult(result);
-    //printf(" <Result");
+    copyfromto(divisible(nb1,nb2),result, digit/4);
+
+    printresult("\nResult =",result);
+
 	
 
     //printf("%ld", compare(nb1,nb2)); 
 
-    
+    //scanf("%s",s1);
     return 0;  
 }
 
@@ -159,7 +160,7 @@ long * addition(long * a, long * b){
     if(len_a<len_b){
         len_a = len_b;
     }
-	for(j=0; j<=len_a ; j++){
+	for(j=0; j<=len_a+1 ; j++){
 		
 		tmp = a[j] + b [j] + carry;
         result[j] = tmp % 10000;
@@ -234,9 +235,10 @@ long * shiftright(long * a, long shiftdistance){
     return tmp;
 }
 
-void printresult(long * result){
+void printresult(char * c, long * result){
     long j,tmp = 0;
     long a = findlen(result);
+    printf("%s",c);
     for(j=a ;j>=0;j--){
         if(j!=a){
             if(result[j]==0){
@@ -297,6 +299,7 @@ long * divisible(long * a, long * b){
         init_nb(xxx,digit/4);
         return xxx;
     }
+
     static long ret[digit/4];
     init_nb(ret,digit/4);
     long Ub[digit/4];
@@ -313,12 +316,11 @@ long * divisible(long * a, long * b){
     init_nb(lmt,digit/4);
     copyfromto(upperb(a,b),Ub,digit/4);
     copyfromto(lowerb(a,b),Lb,digit/4);
-    printf("\nUb = ");
-    printresult(Ub);
-    printf("\nLb = ");
-    printresult(Lb);
+
     
     while(cp1!=2){
+        //printresult("\nUb = ", Ub);
+        //printresult("\nLb = ", Lb);
         nearby = isnearby(Ub,Lb);
         copyfromto(divide(addition(Ub,Lb),2),mid,digit/4);
         copyfromto(longmultiply(b,mid),lmt,digit/4);
@@ -326,6 +328,7 @@ long * divisible(long * a, long * b){
         cp1 = compare(Ub,Lb);
         if(cp1 == 2 && cp != 2){
             return ret;
+            //return mid;
         }
         if(cp==2){
             return mid;
@@ -336,18 +339,78 @@ long * divisible(long * a, long * b){
                 copyfromto(mid,Lb,digit/4);
             }
             
-        }else if(cp==1){
-            if(nearby==1){
-                copyfromto(Lb,Ub,digit/4);
-            }else{
-                copyfromto(mid,Ub,digit/4);
-            }           
+            }else if(cp==1){
+                if(nearby==1){
+                    copyfromto(Lb,Ub,digit/4);
+                }else{
+                    copyfromto(mid,Ub,digit/4);
+                }           
+            }
         }
-    }
     return ret;
+    //return mid;
+}
+
+long * longdivision(long * a, long * b){
+    if(compare(a,b)>0){
+        static long xxx[digit/4];
+        init_nb(xxx,digit/4);
+        return xxx;
+    }
+
+    static long ret[digit/4];
+    init_nb(ret,digit/4);
+    long Ub[digit/4];
+    long Lb[digit/4];
+    long tmp[digit/4];
+    static long mid[digit/4];
+    long lmt[digit/4];
+    long cp,cp1,nearby;
+    init_nb(Ub,digit/4);
+
+    init_nb(Lb,digit/4);
+    init_nb(tmp,digit/4);
+    init_nb(mid,digit/4);
+    init_nb(lmt,digit/4);
+    copyfromto(upperb(a,b),Ub,digit/4);
+    copyfromto(lowerb(a,b),Lb,digit/4);
+
+    
+    while(cp1!=2){
+        //printresult("\nUb = ", Ub);
+        //printresult("\nLb = ", Lb);
+        nearby = isnearby(Ub,Lb);
+        copyfromto(divide(addition(Ub,Lb),2),mid,digit/4);
+        copyfromto(longmultiply(b,mid),lmt,digit/4);
+        cp = compare(a,lmt);       
+        cp1 = compare(Ub,Lb);
+        if(cp1 == 2 && cp != 2){
+            //return ret;
+            return mid;
+        }
+        if(cp==2){
+            return mid;
+        }else if(cp==0){
+            if(nearby==1){
+                copyfromto(Ub,Lb,digit/4);
+            }else{
+                copyfromto(mid,Lb,digit/4);
+            }
+            
+            }else if(cp==1){
+                if(nearby==1){
+                    copyfromto(Lb,Ub,digit/4);
+                }else{
+                    copyfromto(mid,Ub,digit/4);
+                }           
+            }
+        }
+    //return ret;
+    return mid;
 }
 
 long isnearby(long * Ub, long * Lb){
+
     long one[digit/4];
     init_nb(one,digit/4);
     one[0]=1;
@@ -406,8 +469,14 @@ long * lowerb(long * a, long * b){
     init_nb(tmp2,digit/4);
     long bb = b[Lb]+1;
     //printf("long bb = %ld ", bb);
-    copyfromto(shiftright(a,Lb),tmp,digit/4);   
-    copyfromto(divide(tmp,bb),tmp2,digit/4);   
+    if(bb!=10000){
+        copyfromto(shiftright(a,Lb),tmp,digit/4);   
+        copyfromto(divide(tmp,bb),tmp2,digit/4);  
+    }else if(bb==10000){
+        printf("------------------------------------");
+        copyfromto(shiftright(a,Lb+1),tmp2,digit/4); 
+    }
+    
     return tmp2;
 }
 
@@ -478,23 +547,19 @@ void findroot(long * a){
     init_nb(increment2,digit/4);
     increment2[0] = 2;
     copyfromto(mysqrt(a),maxroot,digit/4);
-    
-    while(compare(maxroot,increment)<2){ 
-        printf("\n a = ");
-        printresult(a);
-        ptr = divisible(a,increment);  
-        printf("\nptr = ");
-        printresult(ptr); 
+    while(1){
+        if(compare(maxroot,increment)==2){
+            break;
+        }
+        ptr = divisible(a,increment);
         if(isempty(ptr)== False){
-            printf("\n child ");
-            printresult(increment);
+            printresult("\n child ",increment);
             copyfromto(ptr,a,digit/4);
             copyfromto(increment2,increment,digit/4);
             copyfromto(mysqrt(a),maxroot,digit/4);
         }else{
             copyfromto(addition(increment,one),increment,digit/4);
-        }           
-    }
-    printf("\n child ");
-    printresult(a);
+        }    
+    }    
+    printresult("\n child ___ ",a);
 }
