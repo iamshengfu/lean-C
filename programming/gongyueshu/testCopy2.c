@@ -4,7 +4,8 @@
 #include <string.h>
 #include <ctype.h>
 #define digit 3000 
-
+#define True 1
+#define False 0
 
 long clong(char c){
     long ai;
@@ -27,13 +28,14 @@ long findlen(long * a);
 void printresult(long * a);
 int compare(long * a, long * b);
 long * subtract(long * a, long * b);
-long * g_middle(long * a, long * b);
 long * divisible(long * a, long * b);
 long * divide(long * a, long b);
 long * lowerb(long * a, long * b);
 long * upperb(long * a, long * b);
 long isempty(long * a);
 long isnearby(long * Ub, long * Lb);
+long * mysqrt(long * a);
+void findroot(long * a);
 
 long main() 
 {
@@ -60,11 +62,16 @@ long main()
 	i1 = decompose(s1,nb1);
 	i2 = decompose(s2,nb2);
     
-	copyfromto(divisible(nb1,nb2),result, digit/4);
-    //copyfromto(addition(nb1,nb2),result, digit/4);
-	printf("\nResult > ");
-    printresult(result);
-    printf(" <Result");
+    //printf("\nisempty %i ",isempty(nb1));
+    
+    //copyfromto(upperb(nb1,nb2),result,digit/4);
+    //findroot(nb1);
+    printf("isempty %i",isempty(nb1));
+	//copyfromto(mysqrt(nb1),result, digit/4);
+    //copyfromto(divisible(nb1,nb2),result, digit/4);
+	//printf("\nResult > ");
+    //printresult(result);
+    //printf(" <Result");
 	
 
     //printf("%ld", compare(nb1,nb2)); 
@@ -281,12 +288,11 @@ int compare(long * a, long * b){
         }
         return 2;
     }
-    return 100;
+    return -1;
 }
 
 long * divisible(long * a, long * b){
-    printf("compare a b = %ld", compare(a,b));
-    if(compare(a,b)==1){
+    if(compare(a,b)>0){
         static long xxx[digit/4];
         init_nb(xxx,digit/4);
         return xxx;
@@ -300,12 +306,17 @@ long * divisible(long * a, long * b){
     long lmt[digit/4];
     long cp,cp1,nearby;
     init_nb(Ub,digit/4);
+
     init_nb(Lb,digit/4);
     init_nb(tmp,digit/4);
     init_nb(mid,digit/4);
     init_nb(lmt,digit/4);
     copyfromto(upperb(a,b),Ub,digit/4);
     copyfromto(lowerb(a,b),Lb,digit/4);
+    printf("\nUb = ");
+    printresult(Ub);
+    printf("\nLb = ");
+    printresult(Lb);
     
     while(cp1!=2){
         nearby = isnearby(Ub,Lb);
@@ -357,23 +368,26 @@ long isempty(long * a){
     long z=0;
     for(i=0;i<digit/4;i++){
         if(a[i]!=0){
-            return 1;
+            return 0;
         }
     }
-    return 0;
+    return 1;
 }
 
 long * upperb(long * a, long * b){
     if(compare(a,b)==1){
         return 0;
     }
+    long one[digit/4];
+    init_nb(one,digit/4);
+    one[0]=1;
     long Lb = findlen(b);
     long tmp[digit/4];
     init_nb(tmp,digit/4);
     static long tmp2[digit/4];
     init_nb(tmp2,digit/4);
     copyfromto(shiftright(a,Lb),tmp,digit/4);
-    tmp[0] += 1;
+    copyfromto(addition(tmp,one),tmp,digit/4);
     copyfromto(divide(tmp,b[Lb]),tmp2,digit/4);   
     return tmp2;
 }
@@ -395,32 +409,6 @@ long * lowerb(long * a, long * b){
     copyfromto(shiftright(a,Lb),tmp,digit/4);   
     copyfromto(divide(tmp,bb),tmp2,digit/4);   
     return tmp2;
-}
-
-
-long * g_middle(long * a, long * b){
-    long L1 = findlen(a);
-    long L2 = findlen(b);
-    long ab = L1-L2;
-    long uu[digit/4];
-    long nn[digit/4];
-    static long mid[digit/4];
-    long i;
-    init_nb(mid,digit/4);
-    init_nb(uu,digit/4);
-    init_nb(nn,digit/4);
-    uu[0]=1;
-    nn[0]=1;
-    if(ab>0)
-    {
-        for(i=0;i<=ab+1;i++){
-            shiftleftonce(uu,i);
-        }
-        for(i=0;i<=ab-1;i++){
-            shiftleftonce(nn,i);
-        }
-    }
-    return divide(subtract(uu,nn),2);
 }
 
 long * subtract(long * a, long * b){
@@ -453,4 +441,60 @@ long * divide(long * a, long b){
         rmd = tmp%b;
     }
     return a;
+}
+
+long * mysqrt(long * a){
+    long len = findlen(a);
+    long i;
+    long tmp;
+    static long result[digit/4];
+    init_nb(result,digit/4);
+    result[0] = sqrt(a[len])+1;
+    if(len>0){
+        for(i=0;i<len/2;i++){
+            copyfromto(shiftleftonce(result,1),result,digit/4);
+        }
+        if(len%2==1){
+            copyfromto(shortmultiply(result,len%2*100),result,digit/4);
+        }
+    }
+    return result;
+}
+
+void findroot(long * a){
+    printf("\n start");
+    long maxroot[digit/4];
+    init_nb(maxroot,digit/4);
+    long increment[digit/4];
+    init_nb(increment,digit/4);
+    long one[digit/4];
+    init_nb(one,digit/4);
+    long dv[digit/4];
+    init_nb(dv,digit/4);
+    long * ptr = NULL;
+    one[0] = 1;
+    increment[0] = 2;
+    long increment2[digit/4];
+    init_nb(increment2,digit/4);
+    increment2[0] = 2;
+    copyfromto(mysqrt(a),maxroot,digit/4);
+    
+    while(compare(maxroot,increment)<2){ 
+        printf("\n a = ");
+        printresult(a);
+        ptr = divisible(a,increment);  
+        printf("\nptr = ");
+        printresult(ptr); 
+        if(isempty(ptr)== False){
+            printf("\n child ");
+            printresult(increment);
+            copyfromto(ptr,a,digit/4);
+            copyfromto(increment2,increment,digit/4);
+            copyfromto(mysqrt(a),maxroot,digit/4);
+        }else{
+            copyfromto(addition(increment,one),increment,digit/4);
+        }           
+    }
+    printf("\n child ");
+    printresult(a);
 }
