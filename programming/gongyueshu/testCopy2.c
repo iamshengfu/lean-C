@@ -355,7 +355,7 @@ long * divisible(long * a, long * b){
 }
 
 long * longdivision(long * a, long * b){
-    if(compare(a,b)>0){
+    if(compare(a,b)==1){
         static long xxx[digit/4];
         init_nb(xxx,digit/4);
         return xxx;
