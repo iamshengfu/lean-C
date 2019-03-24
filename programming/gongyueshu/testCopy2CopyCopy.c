@@ -139,10 +139,12 @@ void init_str(char * a, long d){
 }	
 
 void init_nb(long * nb, long d){
-	long i;
+	/*long i;
 	for(i=0;i<d;i++){
 		nb[i] = 0;
-	}
+	}*/
+    memset(nb,0,d4*sizeof(nb));
+    
 }	
 
 long findlen(long * a){
