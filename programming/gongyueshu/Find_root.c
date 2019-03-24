@@ -1,11 +1,13 @@
 #include <math.h>
 #include <stdio.h>
-
+#include <time.h>
 
 long long getchild(long long x);
 int wirtetoy(long long *y, long long x);
 int main(void)
 {
+    clock_t start, end;
+    double cpu_time_used;
     long long x;
     long k;
     long long   tmp;
@@ -16,13 +18,16 @@ int main(void)
         y[z] = 0;
     }
     scanf("%lld",&x);
-    
+    start = clock();
     wirtetoy(y,x);
     
     for(z=0;z<5000;z++){
         if(y[z]==0){break;}
         printf("%ld  ", y[z]);
     }
+    end = clock();
+    cpu_time_used = ((double) (end - start)) / CLOCKS_PER_SEC;
+    printf("\nTook %f seconds to execute \n", cpu_time_used);
     return 0;
 }
 
