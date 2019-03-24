@@ -370,6 +370,7 @@ long * longdivision(long * a, long * b){
     long Lb[digit/4];
     long tmp[digit/4];
     long mid[digit/4];
+    long zero[digit/4];
     static long result[digit/4];
     long lmt[digit/4];
     long cp,cp1,cp2,nearby;
@@ -381,65 +382,68 @@ long * longdivision(long * a, long * b){
     init_nb(mid,digit/4);
     init_nb(lmt,digit/4);
     init_nb(one,digit/4);
+    init_nb(zero,digit/4);
     init_nb(result,digit/4);
     one[0] = 1;
     cp=0;
     cp1=0;
     while(1){
+        printf("\n\nlooping");
+
         copyfromto(upperb(a,b),Ub,digit/4);
         copyfromto(lowerb(a,b),Lb,digit/4);
+        printresult("\n a = ",a);
+        printresult("\n b = ",b);
+        printresult("\n Ub = ",Ub);
+        printresult("\n Lb = ",Lb);
         iterations++;
-        printf("\n\nnext");
-        printf("\nside before = %ld",side);
         if(side==Left){
             copyfromto(divide(addition(Ub,Lb),2),mid,digit/4);
-            printresult("\n + mid = ",mid);
             copyfromto(addition(result,mid),result,digit/4);
+            if(compare(mid,zero)==2){
+                copyfromto(addition(result,one),result,digit/4);
+            }
         }else if(side==Right){
             copyfromto(divide(addition(Ub,Lb),2),mid,digit/4);
             copyfromto(subtract(result,mid),result,digit/4);
-            printresult("\n -mid = ",mid);
-        }      
-        copyfromto(longmultiply(b,mid),lmt,digit/4);
-        printresult("\n a = ",a);
+            if(compare(mid,zero)==2){
+                copyfromto(subtract(result,one),result,digit/4);
+            }            
+        }
+        if(compare(mid,zero)==2){
+            copyfromto(longmultiply(b,one),lmt,digit/4);
+        }else {
+            copyfromto(longmultiply(b,mid),lmt,digit/4);
+        }
         printresult("\n lmt = ",lmt);
-        printresult("\n mid = ",mid);
         printresult("\n result = ",result);
-
         cp = compare(a,lmt);
         if(cp==1){
             side = !side;
         }
-        printf("\nside after = %ld",side);
-        printf("\ncp = %ld",cp);
         if(cp==2){
-            printf("\nIterations = %ld", iterations);
             return result;
         }else if(cp==0){
-                printresult("\nline1 a = ",a);
-                printresult("\nline1 subtract = ",subtract(a,lmt));
                 copyfromto(subtract(a,lmt),a,digit/4);
                 cp1 = compare(a,b);
                 if(cp1==1){
                     printf("\nIterations = %ld", iterations);
                     return result;
                 }else if(cp1==2){
-                    printf("\nIterations = %ld", iterations);
                     copyfromto(addition(result,one),result,digit/4);
+                    printf("\nIterations = %ld", iterations);
                     return result;
                 }
         }else if(cp==1){
-                printresult("\nline2 a = ",a);
-                printresult("\nline2 subtract = ",subtract(lmt,a));
                 copyfromto(subtract(lmt,a),a,digit/4);
                 cp1 = compare(a,b);
                 if(cp1==1){
-                    printf("\nIterations = %ld", iterations);
                     copyfromto(subtract(result,one),result,digit/4);
+                    printf("\nIterations = %ld", iterations);
                     return result;
                 }else if(cp1==2){
-                    printf("\nIterations = %ld", iterations);
                     copyfromto(subtract(result,one),result,digit/4);
+                    printf("\nIterations = %ld", iterations);
                     return result;
                 }
             }
