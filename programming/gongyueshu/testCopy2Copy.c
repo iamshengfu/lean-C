@@ -76,9 +76,15 @@ long main()
     end = clock();
     cpu_time_used = ((double) (end - start)) / CLOCKS_PER_SEC;
     printresult("\nResult = ",result);
-    printf("\nTook %f seconds to execute \n", cpu_time_used); 
-	
-
+    printf("\nLong Took %f seconds to execute \n", cpu_time_used); 
+	start = clock();
+    long i;
+    for(i=0;i<10000;i++){
+        j=99999999/99999;
+    }
+    end = clock();
+    cpu_time_used = ((double) (end - start)) / CLOCKS_PER_SEC;
+    printf("\nShort Took %f seconds to execute \n", cpu_time_used); 
     //printf("%ld", compare(nb1,nb2)); 
 
     //scanf("%s",s1);

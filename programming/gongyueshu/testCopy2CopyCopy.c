@@ -3,7 +3,8 @@
 #include <stdlib.h>
 #include <string.h>
 #include <ctype.h>
-#define digit 3000 
+#define digit 100
+#define d4 25
 #include <time.h>
 #define True 1
 #define False 0
@@ -31,7 +32,7 @@ long findlen(long * a);
 void printresult(char * c, long * result);
 int compare(long * a, long * b);
 long * subtract(long * a, long * b);
-long * divisible(long * a, long * b);
+long * divisible(long * x, long * b);
 long * divide(long * a, long b);
 long * lowerb(long * a, long * b);
 long * upperb(long * a, long * b);
@@ -54,7 +55,7 @@ long main()
     long i1;
 	long i2;
     long j;
-	
+	long i;
 	init_str(s1,digit);
 	init_str(s2,digit); 
 	
@@ -69,17 +70,21 @@ long main()
 	i2 = decompose(s2,nb2);
     
     //printf("\nisempty %i ",isempty(nb1));
-    
     //copyfromto(upperb(nb1,nb2),result,digit/4);
-    //findroot(nb1);
+    findroot(nb1);
     //printf("isempty %i",isempty(nb1));
 	//copyfromto(mysqrt(nb1),result, digit/4);
-    copyfromto(longdivision(nb1,nb2),result, digit/4);
+    //copyfromto(longmultiply(nb1,nb2),result, digit/4);
     end = clock();
     cpu_time_used = ((double) (end - start)) / CLOCKS_PER_SEC;
-    printresult("\nResult = ",result);
+    //printresult("\nResult = ",result);
     printf("\nTook %f seconds to execute \n", cpu_time_used); 
-	
+    
+    start = clock();
+    
+    end = clock();
+    cpu_time_used = ((double) (end - start)) / CLOCKS_PER_SEC;
+    printf("\nShort Took %f seconds to execute \n", cpu_time_used); 
 
     //printf("%ld", compare(nb1,nb2)); 
 
@@ -210,10 +215,7 @@ long * longmultiply(long * a, long * b){
 }
 
 void copyfromto(long * src, long * dst, long len){
-    long i;
-    for(i=0;i<len;i++){
-        dst[i] = src[i];        
-    }
+    memcpy(dst,src,d4*sizeof(*dst));
 }
 
 long * shiftleftonce(long * a, long shiftindicator){
@@ -299,61 +301,92 @@ int compare(long * a, long * b){
     return -1;
 }
 
-long * divisible(long * a, long * b){
-    if(compare(a,b)>0){
+long * divisible(long * x, long * b){
+    if(compare(x,b)==1){
         static long xxx[digit/4];
         init_nb(xxx,digit/4);
         return xxx;
     }
-
+    long iterations =0;
     static long ret[digit/4];
     init_nb(ret,digit/4);
+    long one[digit/4];
     long Ub[digit/4];
     long Lb[digit/4];
     long tmp[digit/4];
-    static long mid[digit/4];
+    long mid[digit/4];
+    long a[digit/4];
+    static long zero[digit/4];
+    static long result[digit/4];
     long lmt[digit/4];
-    long cp,cp1,nearby;
+    long cp,cp1,cp2,nearby;
+    long side =0;
+    
     init_nb(Ub,digit/4);
-
     init_nb(Lb,digit/4);
     init_nb(tmp,digit/4);
     init_nb(mid,digit/4);
     init_nb(lmt,digit/4);
-    copyfromto(upperb(a,b),Ub,digit/4);
-    copyfromto(lowerb(a,b),Lb,digit/4);
-    
-    while(cp1!=2){
-        //printresult("\nUb = ", Ub);
-        //printresult("\nLb = ", Lb);
-        nearby = isnearby(Ub,Lb);
-        copyfromto(divide(addition(Ub,Lb),2),mid,digit/4);
-        copyfromto(longmultiply(b,mid),lmt,digit/4);
-        cp = compare(a,lmt);       
-        cp1 = compare(Ub,Lb);
-        if(cp1 == 2 && cp != 2){
-            return ret;
-            //return mid;
+    init_nb(one,digit/4);
+    init_nb(zero,digit/4);
+    init_nb(a,digit/4);
+    init_nb(result,digit/4);
+    copyfromto(x,a,digit/4);
+    one[0] = 1;
+    cp=0;
+    cp1=0;
+    while(1){
+        copyfromto(upperb(a,b),Ub,digit/4);
+        copyfromto(lowerb(a,b),Lb,digit/4);
+        iterations++;
+        if(side==Left){
+            copyfromto(divide(addition(Ub,Lb),2),mid,digit/4);
+            copyfromto(addition(result,mid),result,digit/4);
+            if(compare(mid,zero)==2){
+                copyfromto(addition(result,one),result,digit/4);
+            }
+        }else if(side==Right){
+            copyfromto(divide(addition(Ub,Lb),2),mid,digit/4);
+            copyfromto(subtract(result,mid),result,digit/4);
+            if(compare(mid,zero)==2){
+                copyfromto(subtract(result,one),result,digit/4);
+            }            
+        }
+        if(compare(mid,zero)==2){
+            copyfromto(longmultiply(b,one),lmt,digit/4);
+        }else {
+            copyfromto(longmultiply(b,mid),lmt,digit/4);
+        }
+        cp = compare(a,lmt);
+        if(cp==1){
+            side = !side;
         }
         if(cp==2){
-            return mid;
+            return result;
         }else if(cp==0){
-            if(nearby==1){
-                copyfromto(Ub,Lb,digit/4);
-            }else{
-                copyfromto(mid,Lb,digit/4);
-            }
-            
-            }else if(cp==1){
-                if(nearby==1){
-                    copyfromto(Lb,Ub,digit/4);
-                }else{
-                    copyfromto(mid,Ub,digit/4);
-                }           
+                copyfromto(subtract(a,lmt),a,digit/4);
+                cp1 = compare(a,b);
+                if(cp1==1){
+                    return zero;
+                }else if(cp1==2){
+                    copyfromto(addition(result,one),result,digit/4);
+                    return result;
+                }
+        }else if(cp==1){
+                copyfromto(subtract(lmt,a),a,digit/4);
+                cp1 = compare(a,b);
+                if(cp1==1){
+                    return zero;
+                }else if(cp1==2){
+                    copyfromto(subtract(result,one),result,digit/4);
+                    return result;
+                }
             }
         }
-    return ret;
-    //return mid;
+        
+    //return ret;
+    printf("\nIterations = %ld", iterations);
+    return result;
 }
 
 long * longdivision(long * a, long * b){
