@@ -3,13 +3,15 @@
 #include <stdlib.h>
 #include <string.h>
 #include <ctype.h>
-#define digit 100
-#define d4 25
+#define digit 120
+#define d4 30
 #include <time.h>
 #define True 1
 #define False 0
 #define Right 1
 #define Left 0
+
+long count = 0;
 
 long clong(char c){
     long ai;
@@ -69,26 +71,24 @@ long main()
 	i1 = decompose(s1,nb1);
 	i2 = decompose(s2,nb2);
     
-    //printf("\nisempty %i ",isempty(nb1));
-    //copyfromto(upperb(nb1,nb2),result,digit/4);
+
     findroot(nb1);
-    //printf("isempty %i",isempty(nb1));
-	//copyfromto(mysqrt(nb1),result, digit/4);
-    //copyfromto(longmultiply(nb1,nb2),result, digit/4);
+
     end = clock();
     cpu_time_used = ((double) (end - start)) / CLOCKS_PER_SEC;
-    //printresult("\nResult = ",result);
     printf("\nTook %f seconds to execute \n", cpu_time_used); 
     
     start = clock();
-    
+    for(i=0;i<8000000;i++){
+        findlen(nb1);
+    }
     end = clock();
     cpu_time_used = ((double) (end - start)) / CLOCKS_PER_SEC;
-    printf("\nShort Took %f seconds to execute \n", cpu_time_used); 
-
+    printf("\nTook %f seconds to execute memcpy \n", cpu_time_used); 
     //printf("%ld", compare(nb1,nb2)); 
 
     //scanf("%s",s1);
+    printf("\nCount = %ld",count);
     return 0;  
 }
 
@@ -149,7 +149,7 @@ void init_nb(long * nb, long d){
 
 long findlen(long * a){
     long a_len;
-
+    count++;
     for(a_len=0;a_len<digit/4;a_len++){
         if(a[digit/4-1-a_len] != 0){
             break;
@@ -217,6 +217,7 @@ long * longmultiply(long * a, long * b){
 }
 
 void copyfromto(long * src, long * dst, long len){
+    
     memcpy(dst,src,d4*sizeof(*dst));
 }
 
