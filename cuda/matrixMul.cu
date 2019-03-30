@@ -24,6 +24,11 @@
  */
 
 // System includes
+
+#ifndef WIN32
+#define WIN32
+#endif
+
 #include <stdio.h>
 #include <assert.h>
 
